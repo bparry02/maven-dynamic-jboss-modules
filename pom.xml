@@ -1,0 +1,117 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.jboss</groupId>
+	<artifactId>maven-resource-example</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>maven-resource-example</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<build.scripts.dir>${project.build.directory}/deployment-scripts</build.scripts.dir>
+		<build.module.jars.dir>${build.scripts.dir}/modules/jars</build.module.jars.dir>
+
+		<common.lib.version>1.0</common.lib.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.jboss</groupId>
+			<artifactId>common-lib</artifactId>
+			<version>${common.lib.version}</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+
+		<finalName>web-services-deployment-${maven.build.timestamp}</finalName>
+
+		<resources>
+			<!-- In the modules folder, filter placeholders in the CLI scripts and 
+				module.xml files ONLY! -->
+			<resource>
+				<directory>src</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>modules/**/*.cli</include>
+					<include>modules/**/module.xml</include>
+				</includes>
+			</resource>
+
+			<!-- copy all other files (*.sh, etc) without filtering -->
+			<resource>
+				<directory>src</directory>
+				<filtering>false</filtering>
+				<excludes>
+					<exclude>modules/**/*.cli</exclude>
+					<exclude>modules/**/module.xml</exclude>
+				</excludes>
+			</resource>
+		</resources>
+
+		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.7</version>
+				<executions>
+					<execution>
+						<id>resources</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${build.scripts.dir}</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Copies down the JARs declared as dependencies so they can be used 
+				to create static modules -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.1</version>
+				<executions>
+					<execution>
+						<id>copy-deps</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${build.module.jars.dir}</outputDirectory>
+							<excludeTransitive>true</excludeTransitive>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.4.1</version>
+				<executions>
+					<execution>
+						<id>zip</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<descriptor>${project.basedir}/assembly.xml</descriptor>
+					<appendAssemblyId>false</appendAssemblyId>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

@@ -1,0 +1,2 @@
+
+/system-property=my.key:add(value=${common.lib.version})
