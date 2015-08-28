@@ -3,12 +3,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.jboss</groupId>
-	<artifactId>maven-resource-example</artifactId>
+	<artifactId>maven-dynamic-jboss-modules</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>maven-resource-example</name>
-	<url>http://maven.apache.org</url>
+	<name>maven-dynamic-jboss-modules</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
